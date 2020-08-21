@@ -1,2 +1,3 @@
-# node-sdk
-SDK for developing custom chatium backends using nodejs
+# Chatium NodeJS SDK
+
+SDK for developing custom chatium backends using NodeJS
