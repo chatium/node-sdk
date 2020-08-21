@@ -1,5 +1,5 @@
-import type { CreateFields, HeapData, HeapFieldMetas, HeapId, HeapObject, HeapObjectBase, HeapObjectType, UpdateFields } from './types';
 import type { AccountCtx, AppCtx, AuthCtx } from '../context';
+import type { CreateFields, HeapData, HeapFieldMetas, HeapId, HeapObject, HeapObjectBase, HeapObjectType, UpdateFields } from './types';
 declare type ReadHeapCtx = AccountCtx & AppCtx & AuthCtx;
 declare type WriteHeapCtx = AccountCtx & AppCtx & AuthCtx;
 /**
@@ -41,13 +41,13 @@ export declare class HeapRepo<HD extends HeapData, Required extends keyof HD = k
     getByIds(ctx: ReadHeapCtx, ids: HeapId[]): Promise<HeapObject<HD>[]>;
     findAll(ctx: ReadHeapCtx): Promise<HeapObject<HD>[]>;
     exists(ctx: ReadHeapCtx, id: HeapId): Promise<boolean>;
-    create(ctx: WriteHeapCtx, fields: CreateFields<HD, Required>): Promise<HeapObject<HD>>;
+    create(ctx: WriteHeapCtx, data: CreateFields<HD, Required>): Promise<HeapObject<HD>>;
     updateMaybe(ctx: WriteHeapCtx, patch: Partial<UpdateFields<HD>> & Pick<HeapObjectBase, 'id'>): Promise<HeapObject<HD> | null>;
     /**
      * Strict update
      */
     update(ctx: WriteHeapCtx, patch: Partial<UpdateFields<HD>> & Pick<HeapObjectBase, 'id'>): Promise<HeapObject<HD>>;
-    createOrUpdate(ctx: WriteHeapCtx, fields: CreateFields<HD, Required> & {
+    createOrUpdate(ctx: WriteHeapCtx, data: CreateFields<HD, Required> & {
         id: HeapId;
     }): Promise<HeapObject<HD>>;
     delete(ctx: WriteHeapCtx, id: HeapId): Promise<HeapObject<HD> | null>;

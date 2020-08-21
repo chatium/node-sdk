@@ -100,10 +100,10 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
     return chatiumGet<boolean>(ctx, `/api/v1/heap/${this.type}/${id}/exists`)
   }
 
-  async create(ctx: WriteHeapCtx, fields: CreateFields<HD, Required>): Promise<HeapObject<HD>> {
+  async create(ctx: WriteHeapCtx, data: CreateFields<HD, Required>): Promise<HeapObject<HD>> {
     const record = await chatiumPost<HeapRecord>(ctx, `/api/v1/heap/${this.type}`, {
       meta: this.fields,
-      fields,
+      data,
     })
 
     return this.rawToObject(record)
@@ -115,7 +115,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
   ): Promise<HeapObject<HD> | null> {
     const record = await chatiumPost<HeapRecord | null>(ctx, `/api/v1/heap/${this.type}/${patch.id}`, {
       meta: this.fields,
-      patch,
+      data: patch,
     })
 
     return record && this.rawToObject(record)
@@ -135,13 +135,10 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
     return result
   }
 
-  async createOrUpdate(
-    ctx: WriteHeapCtx,
-    fields: CreateFields<HD, Required> & { id: HeapId },
-  ): Promise<HeapObject<HD>> {
-    const record = await chatiumPost<HeapRecord>(ctx, `/api/v1/heap/${this.type}/${fields.id}/createOrUpdate`, {
+  async createOrUpdate(ctx: WriteHeapCtx, data: CreateFields<HD, Required> & { id: HeapId }): Promise<HeapObject<HD>> {
+    const record = await chatiumPost<HeapRecord>(ctx, `/api/v1/heap/${this.type}/${data.id}/createOrUpdate`, {
       meta: this.fields,
-      fields,
+      data,
     })
 
     return this.rawToObject(record)
@@ -163,8 +160,8 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
     const result = Object.create(null)
 
     result.id = hr.id
-    result.createdAt = hr.created_at
-    result.updatedAt = hr.updated_at
+    result.createdAt = new Date(hr.created_at)
+    result.updatedAt = new Date(hr.updated_at)
     result.createdBy = hr.created_by && ({ type: userRepoType, id: hr.created_by } as HeapLink<UserData>)
     result.updatedBy = hr.updated_by && ({ type: userRepoType, id: hr.updated_by } as HeapLink<UserData>)
 

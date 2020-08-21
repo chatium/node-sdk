@@ -25,11 +25,11 @@ async function chatiumRequest<R = unknown>(
   url: string,
   config: AxiosRequestConfig,
 ): Promise<R> {
-  const accountUrl = 'https://' + ctx.account.host + (url.startsWith('/') ? '' : '/') + url
+  const accountUrl = ctx.account.host + (url.startsWith('/') ? '' : '/') + url
 
   const requestResult: AxiosResponse<ChatiumResponse<R>> = await axios({
     method,
-    url: accountUrl,
+    url: 'https://' + accountUrl,
     headers: {
       'x-chatium-api-key': ctx.app.apiKey,
       authorization: createChatiumApiToken(ctx, method, accountUrl),
