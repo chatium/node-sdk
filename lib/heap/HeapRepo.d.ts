@@ -1,5 +1,6 @@
-import type { AccountCtx, AppCtx, AuthCtx } from '../context';
+import type { AccountCtx, AppCtx } from '../context';
 import type { CreateFields, HeapData, HeapFieldMetas, HeapId, HeapObject, HeapObjectBase, HeapObjectType, UpdateFields } from './types';
+import { AuthCtx } from '../ChatiumAuth';
 declare type ReadHeapCtx = AccountCtx & AppCtx & AuthCtx;
 declare type WriteHeapCtx = AccountCtx & AppCtx & AuthCtx;
 /**

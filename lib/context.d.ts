@@ -1,3 +1,5 @@
+import { OptionalUserCtx } from './ChatiumUser';
+import { OptionalAuthCtx } from './ChatiumAuth';
 export interface AppCtx {
     app: {
         apiKey: string;
@@ -10,17 +12,7 @@ export interface AccountCtx {
         host: string;
     };
 }
-export interface AuthCtx {
-    auth: {
-        id: number;
-        type: AuthType;
-        key: string;
-        requestToken: string;
-    };
-}
-export declare enum AuthType {
-    Email = "Email",
-    None = "None",
-    Phone = "Phone",
-    Session = "Session"
+export declare function getChatiumContext(ctx: AppCtx, headers: ChatiumHeaders): AppCtx & AccountCtx & OptionalAuthCtx & OptionalUserCtx;
+export interface ChatiumHeaders {
+    'x-chatium-application'?: string;
 }

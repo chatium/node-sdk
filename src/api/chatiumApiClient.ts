@@ -1,15 +1,16 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { sign } from 'jsonwebtoken'
 
-import { AccountCtx, AppCtx, AuthCtx } from '../context'
+import {AccountCtx, AppCtx} from '../context'
 import { ChatiumResponse } from './ChatiumResponse'
+import {AuthCtx, OptionalAuthCtx} from '../ChatiumAuth'
 
 export function chatiumGet<R = unknown>(ctx: AccountCtx & AppCtx & AuthCtx, url: string): Promise<R> {
   return chatiumRequest<R>(ctx, 'get', url, {})
 }
 
 export function chatiumPost<R = unknown, P = unknown>(
-  ctx: AccountCtx & AppCtx & AuthCtx,
+  ctx: AccountCtx & AppCtx & OptionalAuthCtx,
   url: string,
   params?: P,
 ): Promise<R> {
@@ -20,7 +21,7 @@ export function chatiumPost<R = unknown, P = unknown>(
  * DRY function for any chatium api request
  */
 async function chatiumRequest<R = unknown>(
-  ctx: AccountCtx & AppCtx & AuthCtx,
+  ctx: AccountCtx & AppCtx & OptionalAuthCtx,
   method: LowerMethod,
   url: string,
   config: AxiosRequestConfig,
@@ -47,8 +48,20 @@ async function chatiumRequest<R = unknown>(
   }
 }
 
-function createChatiumApiToken(ctx: AuthCtx & AppCtx, method: LowerMethod, url: string): string {
-  return sign({ authToken: ctx.auth.requestToken, iat: Math.ceil(Date.now() / 1000) }, ctx.app.apiSecret + method + url)
+function createChatiumApiToken(ctx: OptionalAuthCtx & AppCtx, method: LowerMethod, url: string): string {
+  const token: ApiToken = {
+    iat: Math.ceil(Date.now() / 1000)
+  }
+  if (ctx.auth) {
+    token.tkn = ctx.auth.requestToken
+  }
+
+  return sign(token, ctx.app.apiSecret + method + url)
+}
+
+interface ApiToken {
+  iat: number
+  tkn?: string
 }
 
 type LowerMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'

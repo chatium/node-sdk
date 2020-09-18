@@ -1,5 +1,5 @@
 import { chatiumGet, chatiumPost } from '../api/chatiumApiClient'
-import type { AccountCtx, AppCtx, AuthCtx } from '../context'
+import type { AccountCtx, AppCtx } from '../context'
 import { NotFoundError } from '../errors'
 import { userRepoType } from './constants'
 import type {
@@ -16,6 +16,7 @@ import type {
   UpdateFields,
   UserData,
 } from './types'
+import { AuthCtx } from '../ChatiumAuth'
 
 type ReadHeapCtx = AccountCtx & AppCtx & AuthCtx
 type WriteHeapCtx = AccountCtx & AppCtx & AuthCtx
