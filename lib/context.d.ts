@@ -12,7 +12,10 @@ export interface AccountCtx {
         host: string;
     };
 }
-export declare function getChatiumContext(ctx: AppCtx, headers: ChatiumHeaders): AppCtx & AccountCtx & OptionalAuthCtx & OptionalUserCtx;
+export interface UniqCtx {
+    uniqId: string | null;
+}
+export declare function getChatiumContext(ctx: AppCtx, headers: ChatiumHeaders): AppCtx & UniqCtx & AccountCtx & OptionalAuthCtx & OptionalUserCtx;
 export interface ChatiumHeaders {
     'x-chatium-application'?: string;
 }

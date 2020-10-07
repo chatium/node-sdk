@@ -1,7 +1,8 @@
 import { verify } from 'jsonwebtoken'
+
+import { ChatiumAuthType } from './ChatiumAuth'
+import { ChatiumUserRole } from './ChatiumUser'
 import { ApiError } from './errors'
-import {ChatiumUserRole} from './ChatiumUser'
-import {ChatiumAuthType} from './ChatiumAuth'
 
 export interface ChatiumAppRequestToken {
   acc: number
@@ -13,6 +14,7 @@ export interface ChatiumAppRequestToken {
   ufn?: string
   uln?: string
   urs?: ChatiumUserRole[]
+  uqid?: string
 }
 
 export function validateChatiumAppRequestToken(token: string, secret: string): ChatiumAppRequestToken {
@@ -25,6 +27,7 @@ export function validateChatiumAppRequestToken(token: string, secret: string): C
   if (
     typeof raw.acc === 'number' &&
     typeof raw.host === 'string' &&
+    (!raw.uqid || typeof raw.uqid === 'string') &&
     (!raw.aid || (typeof raw.aid === 'number' && typeof raw.tkn === 'string' && typeof raw.atp === 'string')) &&
     (!raw.uid ||
       (typeof raw.uid === 'string' &&

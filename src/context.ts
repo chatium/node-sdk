@@ -1,7 +1,7 @@
-import {validateChatiumAppRequestToken} from './ChatiumAppRequestToken'
-import {ApiError} from './errors'
-import {OptionalUserCtx} from './ChatiumUser'
-import {OptionalAuthCtx} from './ChatiumAuth'
+import { validateChatiumAppRequestToken } from './ChatiumAppRequestToken'
+import { OptionalAuthCtx } from './ChatiumAuth'
+import { OptionalUserCtx } from './ChatiumUser'
+import { ApiError } from './errors'
 
 export interface AppCtx {
   app: {
@@ -17,10 +17,14 @@ export interface AccountCtx {
   }
 }
 
+export interface UniqCtx {
+  uniqId: string | null
+}
+
 export function getChatiumContext(
   ctx: AppCtx,
   headers: ChatiumHeaders,
-): AppCtx & AccountCtx & OptionalAuthCtx & OptionalUserCtx {
+): AppCtx & UniqCtx & AccountCtx & OptionalAuthCtx & OptionalUserCtx {
   if (typeof headers['x-chatium-application'] !== 'string') {
     throw new ApiError('x-chatium-application header is required!')
   }
@@ -29,6 +33,7 @@ export function getChatiumContext(
 
   return {
     ...ctx,
+    uniqId: token.uqid ? token.uqid : null,
     account: {
       id: token.acc,
       host: token.host,

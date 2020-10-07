@@ -10,5 +10,6 @@ export interface ChatiumAppRequestToken {
     ufn?: string;
     uln?: string;
     urs?: ChatiumUserRole[];
+    uqid?: string;
 }
 export declare function validateChatiumAppRequestToken(token: string, secret: string): ChatiumAppRequestToken;
