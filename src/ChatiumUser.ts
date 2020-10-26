@@ -1,4 +1,4 @@
-import {AccessDeniedError} from './errors'
+import { AccessDeniedError } from './errors'
 
 export interface ChatiumUser {
   id: string
@@ -32,7 +32,10 @@ export interface OptionalUserCtx {
  *  instead user is cleared from the context like it is is not authenticated, so the route should behave
  *  like it's public anonymous user (auth context is not cleared though).
  */
-export function checkUserRoleAuthorization<Ctx extends OptionalUserCtx>(ctx: Ctx, allowedRoles: ChatiumUserRole[]): Ctx {
+export function checkUserRoleAuthorization<Ctx extends OptionalUserCtx>(
+  ctx: Ctx,
+  allowedRoles: ChatiumUserRole[],
+): Ctx {
   if (ctx.user) {
     for (const allowed of allowedRoles) {
       if (ctx.user.roles.includes(allowed)) {
@@ -43,10 +46,13 @@ export function checkUserRoleAuthorization<Ctx extends OptionalUserCtx>(ctx: Ctx
       }
     }
     throw new AccessDeniedError(
-      `ACCESS DENIED: Current user [${ctx.user.id}] doesn't have ` +
-        `required role(s): ${allowedRoles}`,
+      `ACCESS DENIED: Current user [${ctx.user.id}] doesn't have ` + `required role(s): ${allowedRoles}`,
     )
   } else {
     return ctx
   }
+}
+
+export function isAdmin(user: ChatiumUser | null | undefined): boolean {
+  return !!user && user.roles.includes(ChatiumUserRole.Admin)
 }

@@ -1,5 +1,5 @@
-import { OptionalUserCtx } from './ChatiumUser';
 import { OptionalAuthCtx } from './ChatiumAuth';
+import { OptionalUserCtx } from './ChatiumUser';
 export interface AppCtx {
     app: {
         apiKey: string;

@@ -1,5 +1,5 @@
-import { ChatiumUserRole } from './ChatiumUser';
 import { ChatiumAuthType } from './ChatiumAuth';
+import { ChatiumUserRole } from './ChatiumUser';
 export interface ChatiumAppRequestToken {
     acc: number;
     host: string;

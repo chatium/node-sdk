@@ -1,4 +1,5 @@
 import { chatiumGet, chatiumPost } from '../api/chatiumApiClient'
+import { OptionalAuthCtx } from '../ChatiumAuth'
 import type { AccountCtx, AppCtx } from '../context'
 import { NotFoundError } from '../errors'
 import { userRepoType } from './constants'
@@ -13,13 +14,12 @@ import type {
   HeapObjectBase,
   HeapObjectType,
   HeapRecord,
+  MapFilterLinks,
   UpdateFields,
   UserData,
 } from './types'
-import { AuthCtx } from '../ChatiumAuth'
 
-type ReadHeapCtx = AccountCtx & AppCtx & AuthCtx
-type WriteHeapCtx = AccountCtx & AppCtx & AuthCtx
+export type HeapCtx = AccountCtx & AppCtx & OptionalAuthCtx
 
 /**
  * Generic repository for the heap-stored objects.
@@ -42,7 +42,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
 
   constructor(public readonly type: HeapObjectType, private fields: HeapFieldMetas<HD>) {}
 
-  async findById(ctx: ReadHeapCtx, id: HeapId): Promise<HeapObject<HD> | null> {
+  async findById(ctx: HeapCtx, id: HeapId): Promise<HeapObject<HD> | null> {
     const record = await chatiumGet<HeapRecord | null>(ctx, `/api/v1/heap/${this.type}/${id}`)
 
     return record ? this.rawToObject(record) : null
@@ -52,7 +52,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
    * Strictly returns heap object by the given UUID in the context of the current account and type of this repo.
    *  Fails if the id is not found or belongs to other account/type.
    */
-  async getById(ctx: ReadHeapCtx, id: HeapId): Promise<HeapObject<HD>> {
+  async getById(ctx: HeapCtx, id: HeapId): Promise<HeapObject<HD>> {
     const result = await this.findById(ctx, id)
 
     if (result) {
@@ -66,7 +66,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
    * Same as getByIds but doesn't throw if some of the IDs not found.
    *  Result length might be less than ids length.
    */
-  async findByIds(ctx: ReadHeapCtx, ids: HeapId[]): Promise<HeapObject<HD>[]> {
+  async findByIds(ctx: HeapCtx, ids: HeapId[]): Promise<HeapObject<HD>[]> {
     if (ids.length === 0) {
       return []
     }
@@ -80,7 +80,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
    * Strictly returns heap object by the given UUID in the context of the current account and type of this repo.
    *  Fails if the id is not found or belongs to other account/type.
    */
-  async getByIds(ctx: ReadHeapCtx, ids: HeapId[]): Promise<HeapObject<HD>[]> {
+  async getByIds(ctx: HeapCtx, ids: HeapId[]): Promise<HeapObject<HD>[]> {
     const result = await this.findByIds(ctx, ids)
 
     for (const object of result) {
@@ -92,16 +92,21 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
     return result
   }
 
-  async findAll(ctx: ReadHeapCtx): Promise<HeapObject<HD>[]> {
+  async findAll(ctx: HeapCtx): Promise<HeapObject<HD>[]> {
     const records = await chatiumGet<HeapRecord[]>(ctx, `/api/v1/heap/${this.type}`)
     return records.map(this.rawToObject)
   }
 
-  async exists(ctx: ReadHeapCtx, id: HeapId): Promise<boolean> {
+  async findBy(ctx: HeapCtx, filter: Partial<MapFilterLinks<HD>>): Promise<HeapObject<HD>[]> {
+    const records = await chatiumPost<HeapRecord[]>(ctx, `/api/v1/heap/${this.type}/findBy`, filter)
+    return records.map(this.rawToObject)
+  }
+
+  async exists(ctx: HeapCtx, id: HeapId): Promise<boolean> {
     return chatiumGet<boolean>(ctx, `/api/v1/heap/${this.type}/${id}/exists`)
   }
 
-  async create(ctx: WriteHeapCtx, data: CreateFields<HD, Required>): Promise<HeapObject<HD>> {
+  async create(ctx: HeapCtx, data: CreateFields<HD, Required>): Promise<HeapObject<HD>> {
     const record = await chatiumPost<HeapRecord>(ctx, `/api/v1/heap/${this.type}`, {
       meta: this.fields,
       data,
@@ -111,7 +116,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
   }
 
   async updateMaybe(
-    ctx: WriteHeapCtx,
+    ctx: HeapCtx,
     patch: Partial<UpdateFields<HD>> & Pick<HeapObjectBase, 'id'>,
   ): Promise<HeapObject<HD> | null> {
     const record = await chatiumPost<HeapRecord | null>(ctx, `/api/v1/heap/${this.type}/${patch.id}`, {
@@ -125,10 +130,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
   /**
    * Strict update
    */
-  async update(
-    ctx: WriteHeapCtx,
-    patch: Partial<UpdateFields<HD>> & Pick<HeapObjectBase, 'id'>,
-  ): Promise<HeapObject<HD>> {
+  async update(ctx: HeapCtx, patch: Partial<UpdateFields<HD>> & Pick<HeapObjectBase, 'id'>): Promise<HeapObject<HD>> {
     const result = await this.updateMaybe(ctx, patch)
     if (!result) {
       throw new NotFoundError(this.type, patch.id)
@@ -136,7 +138,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
     return result
   }
 
-  async createOrUpdate(ctx: WriteHeapCtx, data: CreateFields<HD, Required> & { id: HeapId }): Promise<HeapObject<HD>> {
+  async createOrUpdate(ctx: HeapCtx, data: CreateFields<HD, Required> & { id: HeapId }): Promise<HeapObject<HD>> {
     const record = await chatiumPost<HeapRecord>(ctx, `/api/v1/heap/${this.type}/${data.id}/createOrUpdate`, {
       meta: this.fields,
       data,
@@ -145,7 +147,7 @@ export class HeapRepo<HD extends HeapData, Required extends keyof HD = keyof HD>
     return this.rawToObject(record)
   }
 
-  async delete(ctx: WriteHeapCtx, id: HeapId): Promise<HeapObject<HD> | null> {
+  async delete(ctx: HeapCtx, id: HeapId): Promise<HeapObject<HD> | null> {
     const record = await chatiumPost<HeapRecord | null>(ctx, `/api/v1/heap/${this.type}/${id}/delete`, {
       meta: this.fields,
     })

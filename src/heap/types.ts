@@ -164,3 +164,18 @@ type ForUpdate<T> = T extends GenericLink
   : T extends RefLink<HeapData>
   ? HeapObject<EraseRefLink<T>> | HeapId
   : T
+
+export type MapFilterLinks<HD extends HeapData> = {
+  [K in keyof HD]: FilterLinksMap<HD[K]>
+}
+
+/**
+ * Link-fields are represented as plain heap IDs in json 'data' field
+ */
+type FilterLinksMap<T> = T extends null
+  ? null
+  : T extends GenericLink
+  ? HeapId
+  : T extends RefLink<HeapData>
+  ? HeapId
+  : T

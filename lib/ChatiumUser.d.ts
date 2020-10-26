@@ -27,3 +27,4 @@ export interface OptionalUserCtx {
  *  like it's public anonymous user (auth context is not cleared though).
  */
 export declare function checkUserRoleAuthorization<Ctx extends OptionalUserCtx>(ctx: Ctx, allowedRoles: ChatiumUserRole[]): Ctx;
+export declare function isAdmin(user: ChatiumUser | null | undefined): boolean;

@@ -116,4 +116,11 @@ export declare type UpdateFields<HD extends HeapData> = {
  * Allow HeapLink fields to be passed as raw ID when creating or updating
  */
 declare type ForUpdate<T> = T extends GenericLink ? HeapObjectBase | HeapId : T extends RefLink<HeapData> ? HeapObject<EraseRefLink<T>> | HeapId : T;
+export declare type MapFilterLinks<HD extends HeapData> = {
+    [K in keyof HD]: FilterLinksMap<HD[K]>;
+};
+/**
+ * Link-fields are represented as plain heap IDs in json 'data' field
+ */
+declare type FilterLinksMap<T> = T extends null ? null : T extends GenericLink ? HeapId : T extends RefLink<HeapData> ? HeapId : T;
 export {};

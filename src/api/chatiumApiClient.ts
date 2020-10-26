@@ -1,11 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { sign } from 'jsonwebtoken'
 
-import {AccountCtx, AppCtx} from '../context'
+import { OptionalAuthCtx } from '../ChatiumAuth'
+import { AccountCtx, AppCtx } from '../context'
 import { ChatiumResponse } from './ChatiumResponse'
-import {AuthCtx, OptionalAuthCtx} from '../ChatiumAuth'
 
-export function chatiumGet<R = unknown>(ctx: AccountCtx & AppCtx & AuthCtx, url: string): Promise<R> {
+export function chatiumGet<R = unknown>(ctx: AccountCtx & AppCtx & OptionalAuthCtx, url: string): Promise<R> {
   return chatiumRequest<R>(ctx, 'get', url, {})
 }
 
@@ -50,7 +50,7 @@ async function chatiumRequest<R = unknown>(
 
 function createChatiumApiToken(ctx: OptionalAuthCtx & AppCtx, method: LowerMethod, url: string): string {
   const token: ApiToken = {
-    iat: Math.ceil(Date.now() / 1000)
+    iat: Math.ceil(Date.now() / 1000),
   }
   if (ctx.auth) {
     token.tkn = ctx.auth.requestToken
