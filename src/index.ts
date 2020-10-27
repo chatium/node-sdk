@@ -11,5 +11,6 @@ export {
 } from './ChatiumUser'
 export { triggerHotReload } from './devTools'
 export { AccessDeniedError, AuthRequiredError, ChatiumError, NotFoundError, WrongArgumentError } from './errors'
+export { chatiumFsAttachMedia, chatiumFsThumbnailUrl } from './fileService'
 export { HeapCtx, HeapRepo } from './heap/HeapRepo'
 export { RefLink, GenericLink } from './heap/types'
