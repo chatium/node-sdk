@@ -1,6 +1,6 @@
+import { OptionalAuthCtx } from '../ChatiumAuth';
 import type { AccountCtx, AppCtx } from '../context';
 import type { CreateFields, HeapData, HeapFieldMetas, HeapId, HeapObject, HeapObjectBase, HeapObjectType, MapFilterLinks, UpdateFields } from './types';
-import { OptionalAuthCtx } from '../ChatiumAuth';
 export declare type HeapCtx = AccountCtx & AppCtx & OptionalAuthCtx;
 /**
  * Generic repository for the heap-stored objects.

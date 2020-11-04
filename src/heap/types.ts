@@ -80,6 +80,7 @@ export interface UserData extends HeapData {
 export type HeapFieldMeta<JT> =
   | IntMeta
   | TextMeta<JT>
+  | BooleanMeta
   | RefLinkMeta<JT>
   | GenericLinkMeta
   | EnumMeta<JT>
@@ -97,6 +98,10 @@ export interface IntMeta extends FieldMeta<number> {
 
 export interface TextMeta<JT> extends FieldMeta<JT> {
   type: 'text'
+}
+
+export interface BooleanMeta extends FieldMeta<boolean> {
+  type: 'boolean'
 }
 
 export interface RefLinkMeta<JT> extends FieldMeta<JT> {
@@ -133,6 +138,8 @@ export type JsFieldTypeToMeta<JT> = JT extends number
   ? IntMeta | NumEnumMeta<JT>
   : JT extends string
   ? TextMeta<JT> | EnumMeta<JT>
+  : JT extends boolean
+  ? BooleanMeta
   : JT extends GenericLink
   ? GenericLinkMeta
   : JT extends RefLink<HeapData>

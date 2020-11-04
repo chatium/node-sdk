@@ -62,7 +62,7 @@ export interface UserData extends HeapData {
 /**
  * Meta-information for different heap field types
  */
-export declare type HeapFieldMeta<JT> = IntMeta | TextMeta<JT> | RefLinkMeta<JT> | GenericLinkMeta | EnumMeta<JT> | NumEnumMeta<JT> | ObjectMeta<JT>;
+export declare type HeapFieldMeta<JT> = IntMeta | TextMeta<JT> | BooleanMeta | RefLinkMeta<JT> | GenericLinkMeta | EnumMeta<JT> | NumEnumMeta<JT> | ObjectMeta<JT>;
 interface FieldMeta<JT> {
     default?: JT;
     required?: boolean;
@@ -72,6 +72,9 @@ export interface IntMeta extends FieldMeta<number> {
 }
 export interface TextMeta<JT> extends FieldMeta<JT> {
     type: 'text';
+}
+export interface BooleanMeta extends FieldMeta<boolean> {
+    type: 'boolean';
 }
 export interface RefLinkMeta<JT> extends FieldMeta<JT> {
     type: 'link';
@@ -97,7 +100,7 @@ export interface ObjectMeta<JT> extends FieldMeta<JT> {
 export declare type HeapFieldMetas<HD extends HeapData> = {
     [K in keyof HD]: JsFieldTypeToMeta<HD[K]>;
 };
-export declare type JsFieldTypeToMeta<JT> = JT extends number ? IntMeta | NumEnumMeta<JT> : JT extends string ? TextMeta<JT> | EnumMeta<JT> : JT extends GenericLink ? GenericLinkMeta : JT extends RefLink<HeapData> ? RefLinkMeta<JT> : JT extends object ? ObjectMeta<JT> : never;
+export declare type JsFieldTypeToMeta<JT> = JT extends number ? IntMeta | NumEnumMeta<JT> : JT extends string ? TextMeta<JT> | EnumMeta<JT> : JT extends boolean ? BooleanMeta : JT extends GenericLink ? GenericLinkMeta : JT extends RefLink<HeapData> ? RefLinkMeta<JT> : JT extends object ? ObjectMeta<JT> : never;
 /**
  * Maps original `data` type to type accepted by heap-repo's `create` method,
  *  taking into account required fields and mapping link-types to accept IDs
