@@ -9,6 +9,7 @@ export interface ChatiumAppRequestToken {
   host: string
   aid?: number
   atp?: ChatiumAuthType
+  akey?: string
   tkn?: string
   uid?: string
   ufn?: string
@@ -28,7 +29,11 @@ export function validateChatiumAppRequestToken(token: string, secret: string): C
     typeof raw.acc === 'number' &&
     typeof raw.host === 'string' &&
     (!raw.uqid || typeof raw.uqid === 'string') &&
-    (!raw.aid || (typeof raw.aid === 'number' && typeof raw.tkn === 'string' && typeof raw.atp === 'string')) &&
+    (!raw.aid ||
+      (typeof raw.aid === 'number' &&
+        typeof raw.tkn === 'string' &&
+        typeof raw.atp === 'string' &&
+        (!raw.akey || typeof raw.akey === 'string'))) &&
     (!raw.uid ||
       (typeof raw.uid === 'string' &&
         Array.isArray(raw.urs) &&

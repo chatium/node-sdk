@@ -1,6 +1,7 @@
 export interface ChatiumAuth {
   id: number
   type: ChatiumAuthType
+  key?: string
   requestToken: string
 }
 

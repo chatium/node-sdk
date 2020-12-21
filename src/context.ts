@@ -42,6 +42,7 @@ export function getChatiumContext(
       ? {
           id: token.aid,
           type: token.atp!,
+          key: token.akey,
           requestToken: token.tkn!,
         }
       : null,
