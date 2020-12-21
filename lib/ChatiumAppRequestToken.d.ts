@@ -5,6 +5,7 @@ export interface ChatiumAppRequestToken {
     host: string;
     aid?: number;
     atp?: ChatiumAuthType;
+    akey?: string;
     tkn?: string;
     uid?: string;
     ufn?: string;
